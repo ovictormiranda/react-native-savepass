@@ -30,15 +30,37 @@ export function Home() {
 
   async function loadData() {
     const dataKey = '@savepass:logins';
-    // Get asyncStorage data, use setSearchListData and setData
+    //The information on asyncstorage are storage as stringify, so we have to capture this
+    //in na const, and transform it in JSON.parse. to we can use those information.
+    //so, to save it would be a Stringify, do read and use it has to be a JSON parse
+    const response = await AsyncStorage.getItem(dataKey);
+
+    if (response) {
+      const parsedData = JSON.parse(response);
+
+      setSearchListData(parsedData);
+      setData(parsedData);
+    }
   }
 
   function handleFilterLoginData() {
-    // Filter results inside data, save with setSearchListData
+    const filteredData = searchListData.filter(data => {
+      const isValid = data.service_name.toLowerCase()
+      .includes(searchText.toLowerCase())
+
+      if(isValid) {
+        return data;
+      }
+    });
+
+    setSearchListData(filteredData);
   }
 
   function handleChangeInputText(text: string) {
-    // Update searchText value
+    if (!text) {
+      setSearchListData(data);
+    }
+    setSearchText(text);
   }
 
   useFocusEffect(useCallback(() => {
